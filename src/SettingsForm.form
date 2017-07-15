@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="SettingsForm">
+  <grid id="27dc6" binding="panel1" default-binding="true" layout-manager="BorderLayout" hgap="0" vgap="0">
+    <constraints>
+      <xy x="20" y="20" width="659" height="400"/>
+    </constraints>
+    <properties/>
+    <border type="none"/>
+    <children>
+      <grid id="1e55b" layout-manager="BorderLayout" hgap="0" vgap="0">
+        <constraints border-constraint="Center"/>
+        <properties/>
+        <border type="none"/>
+        <children>
+          <grid id="ea084" layout-manager="GridLayoutManager" row-count="7" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+            <margin top="0" left="0" bottom="0" right="0"/>
+            <constraints border-constraint="Center"/>
+            <properties>
+              <inheritsPopupMenu value="true"/>
+              <name value=""/>
+              <preferredSize width="500" height="381"/>
+              <requestFocusEnabled value="false"/>
+            </properties>
+            <border type="none"/>
+            <children>
+              <component id="32858" class="javax.swing.JLabel" binding="infoLabel">
+                <constraints>
+                  <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties>
+                  <autoscrolls value="false"/>
+                  <text value="Here you can configure how the injection code generation should look like"/>
+                </properties>
+              </component>
+              <component id="26ac7" class="javax.swing.JCheckBox" binding="seperateLinesCheckBox">
+                <constraints>
+                  <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties>
+                  <text value="Attribute and field declaration on seperate lines"/>
+                </properties>
+              </component>
+              <component id="a47ed" class="javax.swing.JCheckBox" binding="emptyLineCheckBox">
+                <constraints>
+                  <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties>
+                  <text value="Add an empty line after every injection"/>
+                </properties>
+              </component>
+              <grid id="d4a5" layout-manager="FlowLayout" hgap="5" vgap="5" flow-align="0">
+                <constraints>
+                  <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="1" hsize-policy="1" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties/>
+                <border type="none"/>
+                <children>
+                  <component id="9c97e" class="javax.swing.JLabel">
+                    <constraints/>
+                    <properties>
+                      <maximumSize width="100" height="16"/>
+                      <minimumSize width="50" height="16"/>
+                      <preferredSize width="140" height="16"/>
+                      <requestFocusEnabled value="false"/>
+                      <text value="Declaration prefix"/>
+                      <visible value="true"/>
+                    </properties>
+                  </component>
+                  <component id="97bec" class="javax.swing.JTextField" binding="prefixTextField">
+                    <constraints/>
+                    <properties>
+                      <minimumSize width="150" height="24"/>
+                      <preferredSize width="150" height="24"/>
+                    </properties>
+                  </component>
+                </children>
+              </grid>
+              <grid id="c5761" layout-manager="FlowLayout" hgap="5" vgap="5" flow-align="0">
+                <constraints>
+                  <grid row="5" column="0" row-span="1" col-span="1" vsize-policy="1" hsize-policy="1" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties/>
+                <border type="none"/>
+                <children>
+                  <component id="2802" class="javax.swing.JLabel">
+                    <constraints/>
+                    <properties>
+                      <maximumSize width="100" height="16"/>
+                      <minimumSize width="50" height="16"/>
+                      <preferredSize width="140" height="16"/>
+                      <requestFocusEnabled value="false"/>
+                      <text value="Declaration postfix"/>
+                      <visible value="true"/>
+                    </properties>
+                  </component>
+                  <component id="3c78c" class="javax.swing.JTextField" binding="postfixTextField">
+                    <constraints/>
+                    <properties>
+                      <minimumSize width="150" height="24"/>
+                      <preferredSize width="150" height="24"/>
+                    </properties>
+                  </component>
+                </children>
+              </grid>
+              <component id="aa39" class="javax.swing.JTextArea" binding="textArea">
+                <constraints>
+                  <grid row="6" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties>
+                  <rows value="12"/>
+                  <tabSize value="4"/>
+                  <text value=""/>
+                </properties>
+              </component>
+              <component id="badea" class="javax.swing.JSeparator">
+                <constraints>
+                  <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties/>
+              </component>
+            </children>
+          </grid>
+        </children>
+      </grid>
+    </children>
+  </grid>
+</form>
