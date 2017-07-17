@@ -1,13 +1,13 @@
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.DataKeys
-
-import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.command.WriteCommandAction
 
 class Injector : AnAction() {
 
     override fun actionPerformed(ae: AnActionEvent) {
+
+
         val editor = ae.getData(DataKeys.EDITOR)
         val project = ae.getData(DataKeys.PROJECT)
         val doc = editor!!.document
@@ -16,13 +16,14 @@ class Injector : AnAction() {
 
         if (word != null)
         {
-            var injectPrefix = ""
+            var settings = SettingsService.get()
+
+            var whitespacePrefix = ""
 
             var titleCase = capitalizeFirstLetter(word);
 
             var injectText = "[Inject] $titleCase $word;";
-            if(doc.text.indexOf(injectText) != -1)
-                return;
+
 
             // Look backwards from current selection to ensure we look at the current class
             // (in case there's multiple classes in a file)
@@ -34,25 +35,36 @@ class Injector : AnAction() {
             if(lastInjectIndex == -1 || lastInjectIndex < lastClassIndex){
                 // If no injections yet, inject at top
                 line = doc.getLineNumber(lastClassIndex)
-                injectPrefix = getPrefix(doc.text.lines()[line]) + "\t"
+                whitespacePrefix = getPrefix(doc.text.lines()[line]) + "\t"
                 line +=2;
 
             } else{
                 // Otherwise, inject undeneath lowest one
-                line = doc.getLineNumber(lastInjectIndex);
-                injectPrefix =getPrefix(doc.text.lines()[line]);
-                line++;
+                line = doc.getLineNumber(lastInjectIndex)
+                whitespacePrefix =getPrefix(doc.text.lines()[line])
+                line++
+                if(settings.emptyLineInbetweenInjections)
+                    line++
             }
+
+            if(settings.separateLines)
+                line++
+
+            var text = settings.createInjectionText(word, whitespacePrefix)
+
+            if(doc.text.indexOf(text) != -1)
+                return;
 
             // Check if there's already something at the injection line or one line underneath it,
             // and push down if so.
             if(doc.text.lines()[line].isNotBlank())
-                injectText = "$injectText\n\n"
+                text = "$text\n\n"
             else if(doc.text.lines()[line+1].isNotBlank())
-                injectText = "$injectText\n"
+                text = "$text\n"
+
 
             val runnable = Runnable {
-                doc.insertString(doc.getLineStartOffset(line),injectPrefix + injectText)
+                doc.insertString(doc.getLineStartOffset(line),text)
             }
 
             WriteCommandAction.runWriteCommandAction(project, runnable)
@@ -70,6 +82,7 @@ class Injector : AnAction() {
         return -1;
     }
 
+    // todo put in utility
     fun capitalizeFirstLetter(s: String): String {
         if (s.count() == 1)
             return s.toUpperCase()

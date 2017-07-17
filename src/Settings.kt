@@ -2,6 +2,7 @@ import com.intellij.openapi.options.Configurable
 import com.intellij.openapi.ui.Messages
 import com.intellij.ui.DocumentAdapter
 import javax.swing.JComponent
+import javax.swing.SwingUtilities
 import javax.swing.event.DocumentEvent
 
 /**
@@ -24,9 +25,12 @@ class Settings : Configurable
 
     override fun apply() {
 
-        var textArea = form.textArea;
-
         Messages.showWarningDialog(form.textArea?.text, "Info")
+
+        settingsService.injectionPrefix = form.prefixTextField.text
+        settingsService.injectionPostfix = form.postfixTextField.text
+        settingsService.separateLines = form.separateLinesCheckBox.isSelected
+        settingsService.emptyLineInbetweenInjections =form.emptyLineBetweenInjectionsCheckBox.isSelected
     }
 
     override fun reset() {
@@ -36,27 +40,63 @@ class Settings : Configurable
     override fun createComponent(): JComponent? {
 
         form = SettingsForm()
+        settingsService = SettingsService.get()
 
-        form.textArea.document.addDocumentListener(object : DocumentAdapter() {
+        // Register changes
+        form.separateLinesCheckBox.addChangeListener({ onChange() })
+        form.emptyLineBetweenInjectionsCheckBox.addChangeListener({ onChange() })
+        form.prefixTextField.document.addDocumentListener(object : DocumentAdapter() {
             override fun textChanged(e: DocumentEvent) {
-               changed = true
+                onChange()
+            }
+        })
+        form.postfixTextField.document.addDocumentListener(object : DocumentAdapter() {
+            override fun textChanged(e: DocumentEvent) {
+                onChange()
             }
         })
 
-       // settingsService = SettingsService.getInstance()
+        form.separateLinesCheckBox.isSelected = settingsService.separateLines
+        form.emptyLineBetweenInjectionsCheckBox.isSelected = settingsService.emptyLineInbetweenInjections
+        form.prefixTextField.text = settingsService.injectionPrefix
+        form.postfixTextField.text = settingsService.injectionPostfix
 
-        form.textArea.text = getDefaultText()
+        refreshText()
 
         return form.`$$$getRootComponent$$$`()
     }
 
+    fun onChange()
+    {
+        SwingUtilities.invokeLater( {
+            settingsService.separateLines = form.separateLinesCheckBox.isSelected
+            settingsService.emptyLineInbetweenInjections = form.emptyLineBetweenInjectionsCheckBox.isSelected
+            settingsService.injectionPrefix = form.prefixTextField.text
+            settingsService.injectionPostfix = form.postfixTextField.text
+        })
 
-    fun getDefaultText() : String{
-        var start =  "class Example\n{\n"
+        refreshText()
+    }
 
-        var end = "\tvoid Example()\n\t{\n\t\tfirstInjection.Do()\n\t\tsecondInjection.Do()\n\t}\n}"
+    fun refreshText() {
+        SwingUtilities.invokeLater( {
+            var start =  "class Example\n{\n"
 
-        return start + end
+            var injection1 = settingsService.createInjectionText("firstInjection", "\t")
+            var injection2 = settingsService.createInjectionText("secondInjection", "\t")
+
+            start += injection1
+            if(settingsService.emptyLineInbetweenInjections)
+                start += "\n"
+            start += "\n"
+            start += injection2
+
+            start += "\n\n"
+
+            var end = "\tvoid Example()\n\t{\n\t\tfirstInjection.Do()\n\t\tsecondInjection.Do()\n\t}\n}"
+
+            form.textArea.text = start + end
+        })
     }
 
 

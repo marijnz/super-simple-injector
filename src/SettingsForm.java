@@ -1,6 +1,5 @@
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
-import com.intellij.uiDesigner.core.Spacer;
 
 import javax.swing.*;
 import java.awt.*;
@@ -12,10 +11,10 @@ public class SettingsForm {
     private JPanel panel1;
     public JTextArea textArea;
     private JLabel infoLabel;
-    private JCheckBox seperateLinesCheckBox;
-    private JCheckBox emptyLineCheckBox;
-    private JTextField prefixTextField;
-    private JTextField postfixTextField;
+    public JCheckBox separateLinesCheckBox;
+    public JTextField prefixTextField;
+    public JTextField postfixTextField;
+    public JCheckBox emptyLineBetweenInjectionsCheckBox;
 
     private void createUIComponents() {
         // TODO: place custom component creation code here
@@ -52,12 +51,10 @@ public class SettingsForm {
         infoLabel.setAutoscrolls(false);
         infoLabel.setText("Here you can configure how the injection code generation should look like");
         panel3.add(infoLabel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
-        seperateLinesCheckBox = new JCheckBox();
-        seperateLinesCheckBox.setText("Attribute and field declaration on seperate lines");
-        panel3.add(seperateLinesCheckBox, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        emptyLineCheckBox = new JCheckBox();
-        emptyLineCheckBox.setText("Add an empty line after every injection");
-        panel3.add(emptyLineCheckBox, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        separateLinesCheckBox = new JCheckBox();
+        separateLinesCheckBox.setSelected(false);
+        separateLinesCheckBox.setText("Attribute and field declaration on seperate lines");
+        panel3.add(separateLinesCheckBox, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JPanel panel4 = new JPanel();
         panel4.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 5));
         panel3.add(panel4, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, 1, 1, null, null, null, 0, false));
@@ -95,6 +92,9 @@ public class SettingsForm {
         panel3.add(textArea, new GridConstraints(6, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         final JSeparator separator1 = new JSeparator();
         panel3.add(separator1, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        emptyLineBetweenInjectionsCheckBox = new JCheckBox();
+        emptyLineBetweenInjectionsCheckBox.setText("Empty line inbetween injections");
+        panel3.add(emptyLineBetweenInjectionsCheckBox, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
     }
 
     /**
