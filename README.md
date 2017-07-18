@@ -1,9 +1,9 @@
 # super-simple-injector
-A super simple injection code generation tool for Rider
+A super simple injection code generation tool for Rider - install by downloading RiderInjection.jar and add it in Rider, in "Preferences/Plugins/Install plugin from disk".
 
 Generate injection code with:
-control-i (Windows)
-cmd-i (macOS)
+* control-i (Windows)
+* cmd-i (macOS)
 
 Customize your injections in Preferences/Tools/Super Simple Injector
 
