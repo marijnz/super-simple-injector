@@ -7,7 +7,6 @@ class Injector : AnAction() {
 
     override fun actionPerformed(ae: AnActionEvent) {
 
-
         val editor = ae.getData(DataKeys.EDITOR)
         val project = ae.getData(DataKeys.PROJECT)
         val doc = editor!!.document
@@ -20,40 +19,50 @@ class Injector : AnAction() {
 
             var whitespacePrefix = ""
 
-            var titleCase = capitalizeFirstLetter(word);
+            var classIndex = findCurrentClassIndex(editor.document.charsSequence, editor.caretModel.offset)
 
-            var injectText = "[Inject] $titleCase $word;";
+            // Getting the sub string of the class that contains potentially existing injections
+            // This assumes that injections are always first, directly after the class declaration
+            var injectionsFrom = doc.text.indexOf('{', classIndex)
+            var injectionsTo = doc.text.indexOf("class", injectionsFrom+1)
 
+            if(injectionsTo == -1)
+                injectionsTo = doc.textLength;
 
-            // Look backwards from current selection to ensure we look at the current class
-            // (in case there's multiple classes in a file)
-            var lastInjectIndex = doc.text.lastIndexOf("[Inject]", editor.caretModel.offset)
-            var lastClassIndex = doc.text.lastIndexOf("class", editor.caretModel.offset)
+            var injectionTextBlock = doc.text.substring(injectionsFrom, injectionsTo)
 
-            var line = -1
+            // Determine where the injection should come
+            var lastInjectionIndex = injectionTextBlock.lastIndexOf("[Inject]");
 
-            if(lastInjectIndex == -1 || lastInjectIndex < lastClassIndex){
+            if(lastInjectionIndex != -1)
+                lastInjectionIndex += injectionsFrom;
+
+            var line : Int
+
+            if(lastInjectionIndex == -1){
                 // If no injections yet, inject at top
-                line = doc.getLineNumber(lastClassIndex)
+                line = doc.getLineNumber(classIndex)
                 whitespacePrefix = getPrefix(doc.text.lines()[line]) + "\t"
                 line +=2;
 
             } else{
-                // Otherwise, inject undeneath lowest one
-                line = doc.getLineNumber(lastInjectIndex)
+                // Otherwise, inject underneath lowest one
+                line = doc.getLineNumber(lastInjectionIndex)
                 whitespacePrefix =getPrefix(doc.text.lines()[line])
                 line++
                 if(settings.emptyLineInbetweenInjections)
                     line++
             }
 
-            if(settings.separateLines)
-                line++
-
             var text = settings.createInjectionText(word, whitespacePrefix)
 
-            if(doc.text.indexOf(text) != -1)
+            // Check if injection already exists
+            if(lastInjectionIndex != -1 && injectionTextBlock.contains(text))
                 return;
+
+            //todo this doesn't work out nicely if there's text there already
+            if(settings.separateLines)
+                line++
 
             // Check if there's already something at the injection line or one line underneath it,
             // and push down if so.
@@ -64,11 +73,77 @@ class Injector : AnAction() {
 
 
             val runnable = Runnable {
+                // If there's text already - move the text one line down
+                if(settings.separateLines && doc.text.lines()[line-1].isNotBlank())
+                    doc.insertString(doc.getLineStartOffset(line-1),"\n")
+
                 doc.insertString(doc.getLineStartOffset(line),text)
             }
 
             WriteCommandAction.runWriteCommandAction(project, runnable)
         }
+    }
+
+    // Find the index of the class that the caret position is in.
+    // Doesn't support more than one layer deep classes
+    //todo ensure classes are actual classes and not vars or comments
+    fun findCurrentClassIndex(editorText: CharSequence, caretOffset: Int) : Int
+    {
+        var textTillCaret = editorText.substring(0, caretOffset)
+
+        // Most common case, there's just one class, keep it simple
+        var classCount = textTillCaret.split("class").count()-1
+
+        if(classCount <= 1)
+            return textTillCaret.indexOf("class")
+
+        var i = 0
+        var currentIndex = 0
+
+        var classIndex = editorText.indexOf("class", currentIndex)
+
+        while(i < classCount+1){
+            i++
+            var indent = 0
+            // Keep looking for either '{', '}' or "class"
+            do
+            {
+
+                var increment =  editorText.indexOf('{', currentIndex)
+                var decrement = editorText.indexOf('}', currentIndex)
+
+                var foundClassIndex =  editorText.indexOf("class", currentIndex)
+
+                if(foundClassIndex != -1
+                        && foundClassIndex != classIndex
+                        && foundClassIndex < decrement && foundClassIndex < increment){
+                    classIndex = foundClassIndex+1
+                    currentIndex = foundClassIndex+1
+                    break
+                }
+
+                if(decrement == -1) decrement = Int.MAX_VALUE
+                if(increment == -1) increment = Int.MAX_VALUE
+
+                var foundMinus = decrement < increment
+                if(foundMinus){
+                    currentIndex = decrement+1
+                    indent--
+                }
+                else{
+                    currentIndex = increment+1
+                    indent++
+                }
+            } while(indent != 0)
+
+            if(indent == 0 && currentIndex > caretOffset && caretOffset > classIndex)
+                return classIndex-1
+        }
+
+        // Something went wrong ({ and } don't match up, for example),
+        // Return first class which is better than doing nothing(?)
+
+        return textTillCaret.indexOf("class")
     }
 
     fun getPrefix(line: String) : String {
@@ -80,13 +155,6 @@ class Injector : AnAction() {
         for (i in s.indices)
             if (!s[i].isWhitespace()) return i;
         return -1;
-    }
-
-    // todo put in utility
-    fun capitalizeFirstLetter(s: String): String {
-        if (s.count() == 1)
-            return s.toUpperCase()
-        return s[0].toUpperCase() + s.substring(1)
     }
 
     // From Rider
@@ -118,3 +186,4 @@ class Injector : AnAction() {
         return null
     }
 }
+
