@@ -15,6 +15,7 @@ public class SettingsForm {
     public JTextField prefixTextField;
     public JTextField postfixTextField;
     public JCheckBox emptyLineBetweenInjectionsCheckBox;
+    public JCheckBox propertyStartsWithCapital;
 
     private void createUIComponents() {
         // TODO: place custom component creation code here
@@ -41,7 +42,7 @@ public class SettingsForm {
         panel2.setLayout(new BorderLayout(0, 0));
         panel1.add(panel2, BorderLayout.CENTER);
         final JPanel panel3 = new JPanel();
-        panel3.setLayout(new GridLayoutManager(7, 1, new Insets(0, 0, 0, 0), -1, -1));
+        panel3.setLayout(new GridLayoutManager(8, 1, new Insets(0, 0, 0, 0), -1, -1));
         panel3.setInheritsPopupMenu(true);
         panel3.setName("");
         panel3.setPreferredSize(new Dimension(500, 381));
@@ -57,7 +58,7 @@ public class SettingsForm {
         panel3.add(separateLinesCheckBox, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JPanel panel4 = new JPanel();
         panel4.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 5));
-        panel3.add(panel4, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, 1, 1, null, null, null, 0, false));
+        panel3.add(panel4, new GridConstraints(5, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, 1, 1, null, null, null, 0, false));
         final JLabel label1 = new JLabel();
         label1.setMaximumSize(new Dimension(100, 16));
         label1.setMinimumSize(new Dimension(50, 16));
@@ -72,7 +73,7 @@ public class SettingsForm {
         panel4.add(prefixTextField);
         final JPanel panel5 = new JPanel();
         panel5.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 5));
-        panel3.add(panel5, new GridConstraints(5, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, 1, 1, null, null, null, 0, false));
+        panel3.add(panel5, new GridConstraints(6, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, 1, 1, null, null, null, 0, false));
         final JLabel label2 = new JLabel();
         label2.setMaximumSize(new Dimension(100, 16));
         label2.setMinimumSize(new Dimension(50, 16));
@@ -89,12 +90,15 @@ public class SettingsForm {
         textArea.setRows(12);
         textArea.setTabSize(4);
         textArea.setText("");
-        panel3.add(textArea, new GridConstraints(6, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+        panel3.add(textArea, new GridConstraints(7, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         final JSeparator separator1 = new JSeparator();
         panel3.add(separator1, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         emptyLineBetweenInjectionsCheckBox = new JCheckBox();
         emptyLineBetweenInjectionsCheckBox.setText("Empty line inbetween injections");
         panel3.add(emptyLineBetweenInjectionsCheckBox, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        propertyStartsWithCapital = new JCheckBox();
+        propertyStartsWithCapital.setText("The injection property name starts with a capital letter");
+        panel3.add(propertyStartsWithCapital, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
     }
 
     /**

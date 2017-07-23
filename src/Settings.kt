@@ -45,6 +45,8 @@ class Settings : Configurable
         // Register changes
         form.separateLinesCheckBox.addChangeListener({ onChange() })
         form.emptyLineBetweenInjectionsCheckBox.addChangeListener({ onChange() })
+        form.propertyStartsWithCapital.addChangeListener({ onChange() })
+
         form.prefixTextField.document.addDocumentListener(object : DocumentAdapter() {
             override fun textChanged(e: DocumentEvent) {
                 onChange()
@@ -58,6 +60,8 @@ class Settings : Configurable
 
         form.separateLinesCheckBox.isSelected = settingsService.separateLines
         form.emptyLineBetweenInjectionsCheckBox.isSelected = settingsService.emptyLineInbetweenInjections
+        form.propertyStartsWithCapital.isSelected = settingsService.propertyStartsWithCapital
+
         form.prefixTextField.text = settingsService.injectionPrefix
         form.postfixTextField.text = settingsService.injectionPostfix
 
@@ -71,6 +75,8 @@ class Settings : Configurable
         SwingUtilities.invokeLater( {
             settingsService.separateLines = form.separateLinesCheckBox.isSelected
             settingsService.emptyLineInbetweenInjections = form.emptyLineBetweenInjectionsCheckBox.isSelected
+            settingsService.propertyStartsWithCapital = form.propertyStartsWithCapital.isSelected
+
             settingsService.injectionPrefix = form.prefixTextField.text
             settingsService.injectionPostfix = form.postfixTextField.text
         })
@@ -93,7 +99,12 @@ class Settings : Configurable
 
             start += "\n\n"
 
-            var end = "\tvoid Example()\n\t{\n\t\tfirstInjection.Do()\n\t\tsecondInjection.Do()\n\t}\n}"
+            var end : String
+
+            if(settingsService.propertyStartsWithCapital)
+                end = "\tvoid Example()\n\t{\n\t\tFirstInjection.Do()\n\t\tSecondInjection.Do()\n\t}\n}"
+            else
+                end = "\tvoid Example()\n\t{\n\t\tfirstInjection.Do()\n\t\tsecondInjection.Do()\n\t}\n}"
 
             form.textArea.text = start + end
         })

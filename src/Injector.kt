@@ -2,6 +2,7 @@ import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.DataKeys
 import com.intellij.openapi.command.WriteCommandAction
+import com.intellij.openapi.util.TextRange
 
 class Injector : AnAction() {
 
@@ -11,9 +12,9 @@ class Injector : AnAction() {
         val project = ae.getData(DataKeys.PROJECT)
         val doc = editor!!.document
 
-        val word = getWordAtCaret(editor.document.charsSequence, editor.caretModel.offset)
+        val wordRange = getWordAtCaret(editor.document.charsSequence, editor.caretModel.offset)
 
-        if (word != null)
+        if (wordRange != null)
         {
             var settings = SettingsService.get()
 
@@ -54,6 +55,9 @@ class Injector : AnAction() {
                     line++
             }
 
+            var word = editor.document.charsSequence.
+                    subSequence(wordRange.startOffset, wordRange.endOffset).toString()
+
             var text = settings.createInjectionText(word, whitespacePrefix)
 
             // Check if injection already exists
@@ -73,6 +77,15 @@ class Injector : AnAction() {
 
 
             val runnable = Runnable {
+
+                // Auto-complete will propose the class with first letter capitalized,
+                // This allows to still use that and make it a reference to the
+                // injection property instead
+                if(!settings.propertyStartsWithCapital){
+                    doc.replaceString(wordRange.startOffset, wordRange.endOffset,
+                            word[0].toLowerCase() + word.substring(1))
+                }
+
                 // If there's text already - move the text one line down
                 if(settings.separateLines && doc.text.lines()[line-1].isNotBlank())
                     doc.insertString(doc.getLineStartOffset(line-1),"\n")
@@ -158,7 +171,7 @@ class Injector : AnAction() {
     }
 
     // From Rider
-    fun getWordAtCaret(editorText: CharSequence, caretOffset: Int): String? {
+    fun getWordAtCaret(editorText: CharSequence, caretOffset: Int): TextRange? {
         var caretOffset = caretOffset
 
         if (editorText.isEmpty()) return null
@@ -180,7 +193,7 @@ class Injector : AnAction() {
                 end++
             }
 
-            return editorText.subSequence(start, end).toString()
+            return TextRange(start, end)
         }
 
         return null

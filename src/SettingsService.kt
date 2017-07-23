@@ -14,6 +14,8 @@ class SettingsService : PersistentStateComponent<SettingsService> {
     var emptyLineInbetweenInjections = false
     var injectionPrefix = ""
     var injectionPostfix = ";"
+    var propertyStartsWithCapital = false;
+
     //todo add bool flag for capitalizing first letter of declaration yes/no
 
     companion object {
@@ -28,11 +30,12 @@ class SettingsService : PersistentStateComponent<SettingsService> {
     override fun loadState(state: SettingsService?) {
         this.separateLines = state?.separateLines ?: false
         this.emptyLineInbetweenInjections = state?.emptyLineInbetweenInjections ?: false
+        this.propertyStartsWithCapital = state?.propertyStartsWithCapital ?: false
         this.injectionPrefix = state?.injectionPrefix ?: ""
         this.injectionPostfix = state?.injectionPostfix ?: ";"
     }
 
-    fun createInjectionText(injectionName : String, whitespaceOffset : String) : String
+    fun createInjectionText(propertyName: String, whitespaceOffset : String) : String
     {
         var inject = whitespaceOffset + "[Inject]"
 
@@ -41,19 +44,28 @@ class SettingsService : PersistentStateComponent<SettingsService> {
         else
             inject += " "
 
-        var titleCase = capitalizeFirstLetter(injectionName)
-        var injectText = "$titleCase $injectionName"
+        var propertyNameRulesApplied : String
+
+        if(propertyStartsWithCapital)
+            propertyNameRulesApplied = capitalizeFirstLetter(propertyName)
+        else
+            propertyNameRulesApplied = deCapitalizeFirstLetter(propertyName)
+
+        var className = capitalizeFirstLetter(propertyName)
+
+        var injectText = "$className $propertyNameRulesApplied"
 
         inject += "$injectionPrefix$injectText$injectionPostfix"
 
         return inject
     }
 
-
     fun capitalizeFirstLetter(s: String): String {
-        if (s.count() == 1)
-            return s.toUpperCase()
         return s[0].toUpperCase() + s.substring(1)
+    }
+
+    fun deCapitalizeFirstLetter(s: String): String {
+        return s[0].toLowerCase() + s.substring(1)
     }
 }
 
