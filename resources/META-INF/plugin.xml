@@ -2,16 +2,11 @@
   <id>com.marijnzwemmer.rider.inject</id>
   <name>Super Simple Injector</name>
   <version>1.0</version>
-  <vendor email="marijn@marijn.com" url="www.marijnzwemmr.com">YourCompany</vendor>
+  <vendor email="marijn@marijn.com" url="www.marijnzwemmr.com">Marijn Zwemmer </vendor>
 
   <description><![CDATA[
       Super simple injection code generation for Rider
     ]]></description>
-
-  <change-notes><![CDATA[
-     No change notes yet.
-    ]]>
-  </change-notes>
 
   <idea-version since-build="145.0"/>
 
