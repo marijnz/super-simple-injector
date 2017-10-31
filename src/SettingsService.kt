@@ -12,8 +12,9 @@ class SettingsService : PersistentStateComponent<SettingsService> {
 
     var separateLines = false
     var emptyLineInbetweenInjections = false
-    var injectionPrefix = ""
-    var injectionPostfix = ";"
+    var injectionDeclarationPrefix = ""
+    var injectionNamePrefix = ""
+    var injectionDeclarationPostfix = ";"
     var propertyStartsWithCapital = false;
 
     //todo add bool flag for capitalizing first letter of declaration yes/no
@@ -31,11 +32,12 @@ class SettingsService : PersistentStateComponent<SettingsService> {
         this.separateLines = state?.separateLines ?: false
         this.emptyLineInbetweenInjections = state?.emptyLineInbetweenInjections ?: false
         this.propertyStartsWithCapital = state?.propertyStartsWithCapital ?: false
-        this.injectionPrefix = state?.injectionPrefix ?: ""
-        this.injectionPostfix = state?.injectionPostfix ?: ";"
+        this.injectionDeclarationPrefix = state?.injectionDeclarationPrefix ?: ""
+        this.injectionNamePrefix = state?.injectionNamePrefix ?: ""
+        this.injectionDeclarationPostfix = state?.injectionDeclarationPostfix ?: ";"
     }
 
-    fun createInjectionText(propertyName: String, whitespaceOffset : String) : String
+    fun createInjectionText(propertyName: String, whitespaceOffset : String) : Pair<String, String>
     {
         var inject = whitespaceOffset + "[Inject]"
 
@@ -51,13 +53,23 @@ class SettingsService : PersistentStateComponent<SettingsService> {
         else
             propertyNameRulesApplied = deCapitalizeFirstLetter(propertyName)
 
-        var className = capitalizeFirstLetter(propertyName)
+        var startsWithPrefix = injectionNamePrefix.isNotEmpty() && propertyName.startsWith(injectionNamePrefix)
+        // Only add if the the name hasn't been written with the prefix in mind
+        if(!startsWithPrefix)
+            propertyNameRulesApplied = "$injectionNamePrefix$propertyNameRulesApplied"
+
+        var className = propertyName
+
+        if(startsWithPrefix)
+            className = className.removePrefix(injectionNamePrefix)
+
+        className = capitalizeFirstLetter(className)
 
         var injectText = "$className $propertyNameRulesApplied"
 
-        inject += "$injectionPrefix$injectText$injectionPostfix"
+        inject += "$injectionDeclarationPrefix$injectText$injectionDeclarationPostfix"
 
-        return inject
+        return Pair(propertyNameRulesApplied, inject)
     }
 
     fun capitalizeFirstLetter(s: String): String {

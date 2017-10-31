@@ -12,10 +12,12 @@ public class SettingsForm {
     public JTextArea textArea;
     private JLabel infoLabel;
     public JCheckBox separateLinesCheckBox;
-    public JTextField prefixTextField;
-    public JTextField postfixTextField;
+    public JTextField declarationPrefixTextField;
+    public JTextField namePrefixTextField;
     public JCheckBox emptyLineBetweenInjectionsCheckBox;
     public JCheckBox propertyStartsWithCapital;
+    private JLabel declarationInfix;
+    public JTextField declarationPostfixTextField;
 
     private void createUIComponents() {
         // TODO: place custom component creation code here
@@ -42,7 +44,7 @@ public class SettingsForm {
         panel2.setLayout(new BorderLayout(0, 0));
         panel1.add(panel2, BorderLayout.CENTER);
         final JPanel panel3 = new JPanel();
-        panel3.setLayout(new GridLayoutManager(8, 1, new Insets(0, 0, 0, 0), -1, -1));
+        panel3.setLayout(new GridLayoutManager(9, 1, new Insets(0, 0, 0, 0), -1, -1));
         panel3.setInheritsPopupMenu(true);
         panel3.setName("");
         panel3.setPreferredSize(new Dimension(500, 381));
@@ -67,30 +69,30 @@ public class SettingsForm {
         label1.setText("Declaration prefix");
         label1.setVisible(true);
         panel4.add(label1);
-        prefixTextField = new JTextField();
-        prefixTextField.setMinimumSize(new Dimension(150, 24));
-        prefixTextField.setPreferredSize(new Dimension(150, 24));
-        panel4.add(prefixTextField);
+        declarationPrefixTextField = new JTextField();
+        declarationPrefixTextField.setMinimumSize(new Dimension(150, 24));
+        declarationPrefixTextField.setPreferredSize(new Dimension(150, 24));
+        panel4.add(declarationPrefixTextField);
         final JPanel panel5 = new JPanel();
         panel5.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 5));
         panel3.add(panel5, new GridConstraints(6, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, 1, 1, null, null, null, 0, false));
-        final JLabel label2 = new JLabel();
-        label2.setMaximumSize(new Dimension(100, 16));
-        label2.setMinimumSize(new Dimension(50, 16));
-        label2.setPreferredSize(new Dimension(140, 16));
-        label2.setRequestFocusEnabled(false);
-        label2.setText("Declaration postfix");
-        label2.setVisible(true);
-        panel5.add(label2);
-        postfixTextField = new JTextField();
-        postfixTextField.setMinimumSize(new Dimension(150, 24));
-        postfixTextField.setPreferredSize(new Dimension(150, 24));
-        panel5.add(postfixTextField);
+        declarationInfix = new JLabel();
+        declarationInfix.setMaximumSize(new Dimension(100, 16));
+        declarationInfix.setMinimumSize(new Dimension(50, 16));
+        declarationInfix.setPreferredSize(new Dimension(140, 16));
+        declarationInfix.setRequestFocusEnabled(false);
+        declarationInfix.setText("Name prefix");
+        declarationInfix.setVisible(true);
+        panel5.add(declarationInfix);
+        namePrefixTextField = new JTextField();
+        namePrefixTextField.setMinimumSize(new Dimension(150, 24));
+        namePrefixTextField.setPreferredSize(new Dimension(150, 24));
+        panel5.add(namePrefixTextField);
         textArea = new JTextArea();
         textArea.setRows(12);
         textArea.setTabSize(4);
         textArea.setText("");
-        panel3.add(textArea, new GridConstraints(7, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+        panel3.add(textArea, new GridConstraints(8, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         final JSeparator separator1 = new JSeparator();
         panel3.add(separator1, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         emptyLineBetweenInjectionsCheckBox = new JCheckBox();
@@ -99,6 +101,21 @@ public class SettingsForm {
         propertyStartsWithCapital = new JCheckBox();
         propertyStartsWithCapital.setText("The injection property name starts with a capital letter");
         panel3.add(propertyStartsWithCapital, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final JPanel panel6 = new JPanel();
+        panel6.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 5));
+        panel3.add(panel6, new GridConstraints(7, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, 1, 1, null, null, null, 0, false));
+        final JLabel label2 = new JLabel();
+        label2.setMaximumSize(new Dimension(100, 16));
+        label2.setMinimumSize(new Dimension(50, 16));
+        label2.setPreferredSize(new Dimension(140, 16));
+        label2.setRequestFocusEnabled(false);
+        label2.setText("Declaration postfix");
+        label2.setVisible(true);
+        panel6.add(label2);
+        declarationPostfixTextField = new JTextField();
+        declarationPostfixTextField.setMinimumSize(new Dimension(150, 24));
+        declarationPostfixTextField.setPreferredSize(new Dimension(150, 24));
+        panel6.add(declarationPostfixTextField);
     }
 
     /**

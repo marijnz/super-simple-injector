@@ -27,8 +27,9 @@ class Settings : Configurable
 
         Messages.showWarningDialog(form.textArea?.text, "Info")
 
-        settingsService.injectionPrefix = form.prefixTextField.text
-        settingsService.injectionPostfix = form.postfixTextField.text
+        settingsService.injectionDeclarationPrefix = form.declarationPrefixTextField.text
+        settingsService.injectionNamePrefix = form.namePrefixTextField.text
+        settingsService.injectionDeclarationPostfix = form.declarationPostfixTextField.text
         settingsService.separateLines = form.separateLinesCheckBox.isSelected
         settingsService.emptyLineInbetweenInjections =form.emptyLineBetweenInjectionsCheckBox.isSelected
     }
@@ -47,12 +48,18 @@ class Settings : Configurable
         form.emptyLineBetweenInjectionsCheckBox.addChangeListener({ onChange() })
         form.propertyStartsWithCapital.addChangeListener({ onChange() })
 
-        form.prefixTextField.document.addDocumentListener(object : DocumentAdapter() {
+        form.declarationPrefixTextField.document.addDocumentListener(object : DocumentAdapter() {
             override fun textChanged(e: DocumentEvent) {
                 onChange()
             }
         })
-        form.postfixTextField.document.addDocumentListener(object : DocumentAdapter() {
+        form.namePrefixTextField.document.addDocumentListener(object : DocumentAdapter() {
+            override fun textChanged(e: DocumentEvent) {
+                onChange()
+            }
+        })
+
+        form.declarationPostfixTextField.document.addDocumentListener(object : DocumentAdapter() {
             override fun textChanged(e: DocumentEvent) {
                 onChange()
             }
@@ -62,8 +69,9 @@ class Settings : Configurable
         form.emptyLineBetweenInjectionsCheckBox.isSelected = settingsService.emptyLineInbetweenInjections
         form.propertyStartsWithCapital.isSelected = settingsService.propertyStartsWithCapital
 
-        form.prefixTextField.text = settingsService.injectionPrefix
-        form.postfixTextField.text = settingsService.injectionPostfix
+        form.declarationPrefixTextField.text = settingsService.injectionDeclarationPrefix
+        form.namePrefixTextField.text = settingsService.injectionNamePrefix
+        form.declarationPostfixTextField.text = settingsService.injectionDeclarationPostfix
 
         refreshText()
 
@@ -77,8 +85,9 @@ class Settings : Configurable
             settingsService.emptyLineInbetweenInjections = form.emptyLineBetweenInjectionsCheckBox.isSelected
             settingsService.propertyStartsWithCapital = form.propertyStartsWithCapital.isSelected
 
-            settingsService.injectionPrefix = form.prefixTextField.text
-            settingsService.injectionPostfix = form.postfixTextField.text
+            settingsService.injectionDeclarationPrefix = form.declarationPrefixTextField.text
+            settingsService.injectionNamePrefix = form.namePrefixTextField.text
+            settingsService.injectionDeclarationPostfix = form.declarationPostfixTextField.text
         })
 
         refreshText()
@@ -88,8 +97,8 @@ class Settings : Configurable
         SwingUtilities.invokeLater( {
             var start =  "class Example\n{\n"
 
-            var injection1 = settingsService.createInjectionText("firstInjection", "\t")
-            var injection2 = settingsService.createInjectionText("secondInjection", "\t")
+            var (fieldName1, injection1) = settingsService.createInjectionText("firstInjection", "\t")
+            var (fieldName2, injection2) = settingsService.createInjectionText("secondInjection", "\t")
 
             start += injection1
             if(settingsService.emptyLineInbetweenInjections)
@@ -99,12 +108,7 @@ class Settings : Configurable
 
             start += "\n\n"
 
-            var end : String
-
-            if(settingsService.propertyStartsWithCapital)
-                end = "\tvoid Example()\n\t{\n\t\tFirstInjection.Do()\n\t\tSecondInjection.Do()\n\t}\n}"
-            else
-                end = "\tvoid Example()\n\t{\n\t\tfirstInjection.Do()\n\t\tsecondInjection.Do()\n\t}\n}"
+            var end = "\tvoid Example()\n\t{\n\t\t$fieldName1.Do()\n\t\t$fieldName2.Do()\n\t}\n}"
 
             form.textArea.text = start + end
         })

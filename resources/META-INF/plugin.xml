@@ -1,7 +1,7 @@
 <idea-plugin>
   <id>com.marijnzwemmer.rider.inject</id>
   <name>Super Simple Injector</name>
-  <version>1.0</version>
+  <version>1.1</version>
   <vendor email="marijn@marijn.com" url="www.marijnzwemmr.com">Marijn Zwemmer </vendor>
 
   <description><![CDATA[

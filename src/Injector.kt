@@ -2,6 +2,7 @@ import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.DataKeys
 import com.intellij.openapi.command.WriteCommandAction
+import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.util.TextRange
 
 class Injector : AnAction() {
@@ -35,12 +36,14 @@ class Injector : AnAction() {
             // Determine where the injection should come
             var lastInjectionIndex = injectionTextBlock.lastIndexOf("[Inject]");
 
-            if(lastInjectionIndex != -1)
+            var foundExistingInjections = lastInjectionIndex != -1;
+
+            if(foundExistingInjections)
                 lastInjectionIndex += injectionsFrom;
 
             var line : Int
 
-            if(lastInjectionIndex == -1){
+            if(!foundExistingInjections){
                 // If no injections yet, inject at top
                 line = doc.getLineNumber(classIndex)
                 whitespacePrefix = getPrefix(doc.text.lines()[line]) + "\t"
@@ -58,10 +61,10 @@ class Injector : AnAction() {
             var word = editor.document.charsSequence.
                     subSequence(wordRange.startOffset, wordRange.endOffset).toString()
 
-            var text = settings.createInjectionText(word, whitespacePrefix)
+            var (fieldName, injectionText) = settings.createInjectionText(word, whitespacePrefix)
 
             // Check if injection already exists
-            if(lastInjectionIndex != -1 && injectionTextBlock.contains(text))
+            if(lastInjectionIndex != -1 && injectionTextBlock.contains(injectionText))
                 return;
 
             //todo this doesn't work out nicely if there's text there already
@@ -71,26 +74,21 @@ class Injector : AnAction() {
             // Check if there's already something at the injection line or one line underneath it,
             // and push down if so.
             if(doc.text.lines()[line].isNotBlank())
-                text = "$text\n\n"
+                injectionText = "$injectionText\n\n"
             else if(doc.text.lines()[line+1].isNotBlank())
-                text = "$text\n"
+                injectionText = "$injectionText\n"
 
 
             val runnable = Runnable {
 
-                // Auto-complete will propose the class with first letter capitalized,
-                // This allows to still use that and make it a reference to the
-                // injection property instead
-                if(!settings.propertyStartsWithCapital){
-                    doc.replaceString(wordRange.startOffset, wordRange.endOffset,
-                            word[0].toLowerCase() + word.substring(1))
-                }
-
                 // If there's text already - move the text one line down
-                if(settings.separateLines && doc.text.lines()[line-1].isNotBlank())
+                if(!foundExistingInjections && settings.separateLines && doc.text.lines()[line-1].isNotBlank())
                     doc.insertString(doc.getLineStartOffset(line-1),"\n")
 
-                doc.insertString(doc.getLineStartOffset(line),text)
+                // Replace the reference name with the applied settings (capitalizing, prefix)
+                doc.replaceString(wordRange.startOffset, wordRange.endOffset, fieldName)
+
+                doc.insertString(doc.getLineStartOffset(line),injectionText)
             }
 
             WriteCommandAction.runWriteCommandAction(project, runnable)
@@ -107,56 +105,75 @@ class Injector : AnAction() {
         // Most common case, there's just one class, keep it simple
         var classCount = textTillCaret.split("class").count()-1
 
-        if(classCount <= 1)
-            return textTillCaret.indexOf("class")
+        var firstClassIndex = textTillCaret.indexOf("class")
 
-        var i = 0
+        if(classCount <= 1)
+            return firstClassIndex
+
         var currentIndex = 0
 
         var classIndex = editorText.indexOf("class", currentIndex)
 
-        while(i < classCount+1){
-            i++
+        var i = 0
+        while(i++ < classCount+1){
             var indent = 0
+            var classIndent = 0
             // Keep looking for either '{', '}' or "class"
-            do
-            {
 
+            // Avoid infinite loop here in case brackets don't match up
+            var k = 0
+            while(k++ < 100)
+            {
                 var increment =  editorText.indexOf('{', currentIndex)
                 var decrement = editorText.indexOf('}', currentIndex)
 
                 var foundClassIndex =  editorText.indexOf("class", currentIndex)
 
+                var foundClass = false
+                // See if we found a class - otherwise look for brackets
+                // and see if we hit the end of our current class
                 if(foundClassIndex != -1
                         && foundClassIndex != classIndex
                         && foundClassIndex < decrement && foundClassIndex < increment){
                     classIndex = foundClassIndex+1
                     currentIndex = foundClassIndex+1
+                    classIndent = 0
+                    foundClass = true
+                }
+                else{
+                    if(decrement == -1) decrement = Int.MAX_VALUE
+                    if(increment == -1) increment = Int.MAX_VALUE
+
+                    var foundMinus = decrement < increment
+                    if(foundMinus){
+                        currentIndex = decrement+1
+                        indent--
+                        classIndent--
+                    }
+                    else{
+                        currentIndex = increment+1
+                        indent++
+                        classIndent++
+                    }
+                }
+
+                // indent is zero, so we hit the end of a class
+                if(classIndent == 0 || foundClass){
+                    if(currentIndex > caretOffset /* && caretOffset > classIndex*/)
+                        return classIndex-1
+                    else if(!foundClass)
+                        classIndex = firstClassIndex // We're back to our root class (because only one class layer supported)
                     break
                 }
 
-                if(decrement == -1) decrement = Int.MAX_VALUE
-                if(increment == -1) increment = Int.MAX_VALUE
 
-                var foundMinus = decrement < increment
-                if(foundMinus){
-                    currentIndex = decrement+1
-                    indent--
-                }
-                else{
-                    currentIndex = increment+1
-                    indent++
-                }
-            } while(indent != 0)
-
-            if(indent == 0 && currentIndex > caretOffset && caretOffset > classIndex)
-                return classIndex-1
+            }
         }
 
         // Something went wrong ({ and } don't match up, for example),
         // Return first class which is better than doing nothing(?)
 
-        return textTillCaret.indexOf("class")
+        return firstClassIndex
     }
 
     fun getPrefix(line: String) : String {
