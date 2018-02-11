@@ -114,8 +114,10 @@ class Injector : AnAction() {
 
         var classIndex = editorText.indexOf("class", currentIndex)
 
-        var i = 0
-        while(i++ < classCount+1){
+        var prevClassIndex = 0;
+
+        var atClass = 0
+        while(atClass < classCount){
             var indent = 0
             var classIndent = 0
             // Keep looking for either '{', '}' or "class"
@@ -135,10 +137,12 @@ class Injector : AnAction() {
                 if(foundClassIndex != -1
                         && foundClassIndex != classIndex
                         && foundClassIndex < decrement && foundClassIndex < increment){
+                    prevClassIndex = classIndex;
                     classIndex = foundClassIndex+1
                     currentIndex = foundClassIndex+1
                     classIndent = 0
                     foundClass = true
+                    atClass++
                 }
                 else{
                     if(decrement == -1) decrement = Int.MAX_VALUE
@@ -162,7 +166,7 @@ class Injector : AnAction() {
                     if(currentIndex > caretOffset /* && caretOffset > classIndex*/)
                         return classIndex-1
                     else if(!foundClass)
-                        classIndex = firstClassIndex // We're back to our root class (because only one class layer supported)
+                        classIndex = prevClassIndex // We're back to our prev class (because only one class layer supported)
                     break
                 }
 
