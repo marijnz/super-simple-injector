@@ -9,5 +9,5 @@ Generate injection code with:
 
 Customize your injections in Preferences/Tools/Super Simple Injector
 
-<img src="https://download.plugins.jetbrains.com/9858/screenshot_17192.png" width="500" />
-<img src="https://download.plugins.jetbrains.com/9858/screenshot_17486.png" width="500" />
+<img src="https://plugins.jetbrains.com/files/9858/screenshot_17486.png" width="500" />
+<img src="https://plugins.jetbrains.com/files/9858/screenshot_17192.png" width="500" />
