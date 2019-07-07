@@ -1,6 +1,6 @@
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
-import com.intellij.openapi.actionSystem.DataKeys
+import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.util.TextRange
@@ -9,8 +9,8 @@ class Injector : AnAction() {
 
     override fun actionPerformed(ae: AnActionEvent) {
 
-        val editor = ae.getData(DataKeys.EDITOR)
-        val project = ae.getData(DataKeys.PROJECT)
+        val project = ae.project
+        val editor = ae.getData(CommonDataKeys.EDITOR)
         val doc = editor!!.document
 
         val wordRange = getWordAtCaret(editor.document.charsSequence, editor.caretModel.offset)
@@ -45,7 +45,7 @@ class Injector : AnAction() {
 
             if(!foundExistingInjections){
                 // If no injections yet, inject at top
-                line = doc.getLineNumber(classIndex)
+                line = doc.getLineNumber(injectionsFrom)
                 whitespacePrefix = getPrefix(doc.text.lines()[line]) + "\t"
                 line +=2;
 

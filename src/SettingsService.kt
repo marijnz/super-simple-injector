@@ -6,7 +6,7 @@ import com.intellij.openapi.components.Storage
 
 @State(
         name = "SettingsService", storages = arrayOf(
-        Storage(id = "other", file = "$APP_CONFIG$/SimpleInjection.xml"))
+        Storage(file = "$APP_CONFIG$/SimpleInjection.xml"))
 )
 class SettingsService : PersistentStateComponent<SettingsService> {
 
@@ -28,13 +28,13 @@ class SettingsService : PersistentStateComponent<SettingsService> {
         return this
     }
 
-    override fun loadState(state: SettingsService?) {
-        this.separateLines = state?.separateLines ?: false
-        this.emptyLineInbetweenInjections = state?.emptyLineInbetweenInjections ?: false
-        this.propertyStartsWithCapital = state?.propertyStartsWithCapital ?: false
-        this.injectionDeclarationPrefix = state?.injectionDeclarationPrefix ?: ""
-        this.injectionNamePrefix = state?.injectionNamePrefix ?: ""
-        this.injectionDeclarationPostfix = state?.injectionDeclarationPostfix ?: ";"
+    override fun loadState(state: SettingsService) {
+        this.separateLines = state.separateLines
+        this.emptyLineInbetweenInjections = state.emptyLineInbetweenInjections
+        this.propertyStartsWithCapital = state.propertyStartsWithCapital
+        this.injectionDeclarationPrefix = state.injectionDeclarationPrefix
+        this.injectionNamePrefix = state.injectionNamePrefix
+        this.injectionDeclarationPostfix = state.injectionDeclarationPostfix
     }
 
     fun createInjectionText(propertyName: String, whitespaceOffset : String) : Pair<String, String>
